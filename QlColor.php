@@ -28,11 +28,20 @@ class QlColor
 
     private function init($input)
     {
-        if (is_object($input) && 'QlColor' === get_class($input)) $this->initByClass($input);
+        if (is_object($input) && 'QlColor' === get_class($input)) {
+            $this->initByClass($input);
+            return;
+        }
         if (is_string($input)) {
             if (false !== strpos($input, ',')) {$this->initByRgba($input);}
             if (false !== strpos($input, '#')) {$this->initByHex($input);}
+            return;
         }
+        if (is_array($input)) {
+            $this->initByArray($input);
+            return;
+        }
+        die('Cannot work on this');
     }
 
     private function initByClass(QlColor $input)
@@ -63,6 +72,16 @@ class QlColor
         $this->setGreen(hexdec($array[1]));
         $this->setBlue(hexdec($array[2]));
         $this->setAlpha(1);
+    }
+
+    private function initByArray(array $array)
+    {
+        if (3 !== count($array) && 4 !== count($array)) die('Cannot work on this');
+        $this->setRed($array['red']);
+        $this->setGreen($array['green']);
+        $this->setBlue($array['blue']);
+        $this->setAlpha(1);
+        if (isset($array['alpha'])) $this->setAlpha($array['alpha']);
     }
 
     /**
