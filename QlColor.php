@@ -10,7 +10,12 @@ class QlColor
     private $red = 0;
     private $green = 0;
     private $blue = 0;
-    private $opacity = 1;
+    private $alpha = 1;
+
+    private $keyRed = 'red';
+    private $keyGreen = 'green';
+    private $keyBlue = 'blue';
+    private $keyAlpha = 'alpha';
 
     private $greyScaleRed = 0.2126;
     private $greyScaleGreen = 0.7152;
@@ -35,7 +40,7 @@ class QlColor
         $this->setRed($input->red);
         $this->setGreen($input->green);
         $this->setBlue($input->blue);
-        $this->setOpacity($input->opacity);
+        $this->setAlpha($input->alpha);
     }
 
     private function initByRgba(string $input)
@@ -45,8 +50,8 @@ class QlColor
         $this->setRed($array[0]);
         $this->setGreen($array[1]);
         $this->setBlue($array[2]);
-        $this->setOpacity(1);
-        if (isset($array[3])) $this->setOpacity($array[3]);
+        $this->setAlpha(1);
+        if (isset($array[3])) $this->setAlpha($array[3]);
     }
 
     private function initByHex(string $input)
@@ -57,7 +62,7 @@ class QlColor
         $this->setRed(hexdec($array[0]));
         $this->setGreen(hexdec($array[1]));
         $this->setBlue(hexdec($array[2]));
-        $this->setOpacity(1);
+        $this->setAlpha(1);
     }
 
     /**
@@ -69,7 +74,7 @@ class QlColor
         $this->addRed($color);
         $this->addGreen($color);
         $this->addBlue($color);
-        $this->addOpacity($color);
+        $this->addAlpha($color);
     }
 
     public function addRed(QlColor $color)
@@ -87,9 +92,9 @@ class QlColor
         $this->red += $color->getBlue();
     }
 
-    public function addOpacity(QlColor $color)
+    public function addAlpha(QlColor $color)
     {
-        $this->opacity += $color->getOpacity();
+        $this->alpha += $color->getAlpha();
     }
 
     /**
@@ -101,7 +106,7 @@ class QlColor
         $this->subRed($color);
         $this->subGreen($color);
         $this->subBlue($color);
-        $this->subOpacity($color);
+        $this->subAlpha($color);
     }
 
     public function subRed(QlColor $color)
@@ -119,13 +124,13 @@ class QlColor
         $this->red -= $color->getBlue();
     }
 
-    public function subOpacity(QlColor $color)
+    public function subAlpha(QlColor $color)
     {
-        $this->opacity -= $color->getOpacity();
+        $this->alpha -= $color->getAlpha();
     }
 
     /**
-     * div
+     * MULTIPLY
      */
 
     public function mult(QlColor $color)
@@ -133,7 +138,7 @@ class QlColor
         $this->multRed($color);
         $this->multGreen($color);
         $this->multBlue($color);
-        $this->multOpacity($color);
+        $this->multAlpha($color);
     }
 
     public function multRed(QlColor $color)
@@ -151,13 +156,13 @@ class QlColor
         $this->red *= $color->getBlue();
     }
 
-    public function multOpacity(QlColor $color)
+    public function multAlpha(QlColor $color)
     {
-        $this->opacity *= $color->getOpacity();
+        $this->alpha *= $color->getAlpha();
     }
 
     /**
-     * DIV
+     * DIVIDE
      */
 
     public function div(QlColor $color)
@@ -165,7 +170,7 @@ class QlColor
         $this->divRed($color);
         $this->divGreen($color);
         $this->divBlue($color);
-        $this->divOpacity($color);
+        $this->divAlpha($color);
     }
 
     public function divRed(QlColor $color)
@@ -183,9 +188,9 @@ class QlColor
         $this->red /= $color->getBlue();
     }
 
-    public function divOpacity(QlColor $color)
+    public function divAlpha(QlColor $color)
     {
-        $this->opacity /= $color->getOpacity();
+        $this->alpha /= $color->getAlpha();
     }
 
     /**
@@ -207,9 +212,9 @@ class QlColor
         $this->blue = $value;
     }
 
-    public function setOpacity($value)
+    public function setAlpha($value)
     {
-        $this->opacity = $value;
+        $this->alpha = $value;
     }
 
     public function getRed()
@@ -227,9 +232,9 @@ class QlColor
         return $this->transform255($this->blue);
     }
 
-    public function getOpacity()
+    public function getAlpha()
     {
-        return $this->transformPercent($this->opacity);
+        return $this->transformPercent($this->alpha);
     }
 
     public function getRGB()
@@ -239,17 +244,26 @@ class QlColor
 
     public function getRGBArray()
     {
-        return [$this->getRed(), $this->getGreen(), $this->getBlue()];
+        return [
+            $this->keyRed => $this->getRed(),
+            $this->keyGreen => $this->getGreen(),
+            $this->keyBlue => $this->getBlue()
+        ];
     }
 
     public function getRGBA()
     {
-        return [$this->getRed(), $this->getGreen(), $this->getBlue(), $this->getOpacity()];
+        return implode(',', $this->getRGBAArray());
     }
 
     public function getRGBAArray()
     {
-        return implode (',', $this->getRGBAArray());
+        return [
+            $this->keyRed => $this->getRed(),
+            $this->keyGreen => $this->getGreen(),
+            $this->keyBlue => $this->getBlue(),
+            $this->keyAlpha => $this->getAlpha()
+        ];
     }
 
     public function getHex()
@@ -259,7 +273,11 @@ class QlColor
 
     public function getHexArray()
     {
-        return [$this->transformHex($this->getRed()), $this->transformHex($this->getGreen()), $this->transformHex($this->getBlue())];
+        return [
+            $this->keyRed => $this->transformHex($this->getRed()),
+            $this->keyGreen => $this->transformHex($this->getGreen()),
+            $this->keyBlue => $this->transformHex($this->getBlue())
+        ];
     }
 
     public function getGrey()
@@ -269,7 +287,12 @@ class QlColor
 
     public function getGreyArray()
     {
-        return [$this->getGreyValueRed(), $this->getGreyValueGreen(), $this->getGreyValueBlue(), $this->getOpacity()];
+        return [
+            $this->keyRed => $this->getGreyValueRed(),
+            $this->keyGreen => $this->getGreyValueGreen(),
+            $this->keyBlue => $this->getGreyValueBlue(),
+            $this->keyAlpha => $this->getAlpha()
+        ];
     }
 
     public function getGreyValueRed()
